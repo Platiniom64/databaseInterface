@@ -36,8 +36,13 @@ rootTab.pack(fill="both")
 titleLabel = tk.Label(tab1, text="Information about the program", font="bold")
 titleLabel.pack()
 
-textLabel = tk.Label(tab1, text="This progam .. BLA BLA BLA EDIT THIS")
-textLabel.pack()
+textLabel = tk.Label(tab1,
+                    text="This progam will helps with adding and retreiving data from a database. \n\n" + 
+                         "The tab 'add data' helps you add rows to the databse.\nYou can enter any data you want and it will add it to the database. \n\n" +  
+                         "The tab 'retrieve data' will help you find data inside the database from different options that\nyou choose. \n\n" + 
+                         "this program works by connection to a MySQL server. Please install and start a server on \nyour machine.",
+                    justify="left")
+textLabel.pack(side="left")
 
 # * set up of the second tab
 titleLabel = tk.Label(tab2, text="Enter new data into database", font="bold")

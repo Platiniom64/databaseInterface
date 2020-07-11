@@ -1,10 +1,22 @@
 import tkinter as tk
 from tkinter import ttk
+import mysql.connector
 
-# * set up of the root
+# * set up of the root window
 root = tk.Tk()
 root.geometry("500x500")
 root.title("user interface database")
+
+# * set up of the database connection abd the database itself
+mydb = mysql.connector.connect(host="localhost", user="root", passwd="myPassword")
+
+# this is the obecjt to use when interacting with the database
+mycursor = mydb.cursor()
+
+#creates the database and choses that one for the commands
+mycursor.execute("CREATE DATABASE IF NOT EXISTS donations;")
+mycursor.execute("use donations;")
+
 
 # * creation of the different tabs of the window
 rootTab = ttk.Notebook(root)
@@ -24,7 +36,7 @@ rootTab.pack(fill="both")
 titleLabel = tk.Label(tab1, text="Information about the program", font="bold")
 titleLabel.pack()
 
-textLabel = tk.Label(tab1, text="This progam .. BLA BLA BLA EDIT HERE")
+textLabel = tk.Label(tab1, text="This progam .. BLA BLA BLA EDIT THIS")
 textLabel.pack()
 
 # * set up of the second tab

@@ -14,8 +14,8 @@ mydb = mysql.connector.connect(host="localhost", user="root", passwd="myPassword
 mycursor = mydb.cursor()
 
 #creates the database and choses that one for the commands
-mycursor.execute("CREATE DATABASE IF NOT EXISTS donations;")
-mycursor.execute("use donations;")
+mycursor.execute("CREATE DATABASE IF NOT EXISTS donations_db;")
+mycursor.execute("use donations_db;")
 
 
 # * creation of the different tabs of the window

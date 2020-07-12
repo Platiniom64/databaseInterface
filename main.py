@@ -13,9 +13,30 @@ mydb = mysql.connector.connect(host="localhost", user="root", passwd="myPassword
 # this is the obecjt to use when interacting with the database
 mycursor = mydb.cursor()
 
-#creates the database and choses that one for the commands
+# creates the database and choses that one for the commands
 mycursor.execute("CREATE DATABASE IF NOT EXISTS donations_db;")
 mycursor.execute("use donations_db;")
+
+# create tables for database
+mycursor.execute("CREATE TABLE IF NOT EXISTS Countries (id VARCHAR(255) PRIMARY KEY NOT NULL," + 
+                                                       "country_name VARCHAR(255) NOT NULL);")
+
+mycursor.execute("CREATE TABLE IF NOT EXISTS Donors (id INT AUTO_INCREMENT PRIMARY KEY," +
+                                                    "firstname VARCHAR(255) NOT NULL," + 
+                                                    "lastname VARCHAR(255) NOT NULL," +
+                                                    "profession VARCHAR(255) DEFAULT 'not specified'," +
+                                                    "country_id VARCHAR(255) DEFAULT 'not specified'," +
+                                                    "number_donations INT DEFAULT 0," + 
+                                                    "total_gifted INT DEFAULT 0," +
+                                                    "created_at TIMESTAMP DEFAULT NOW()," + 
+                                                    "FOREIGN KEY(country_id) REFERENCES countries(id))")
+
+mycursor.execute("CREATE TABLE IF NOT EXISTS Donations (id INT AUTO_INCREMENT PRIMARY KEY," + 
+                                                       "amount DECIMAL(65, 2) NOT NULL," + 
+                                                       "type VARCHAR(255) DEFAULT 'not specified'," +
+                                                       "donor_id INT NOT NULL,"
+                                                       "created_at TIMESTAMP DEFAULT NOW()," + 
+                                                       "FOREIGN KEY(donor_id) REFERENCES donors(id))")
 
 
 # * creation of the different tabs of the window

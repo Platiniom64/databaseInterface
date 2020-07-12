@@ -21,6 +21,7 @@ mycursor.execute("use donations_db;")
 mycursor.execute("CREATE TABLE IF NOT EXISTS Donors (id INT AUTO_INCREMENT PRIMARY KEY," +
                                                     "firstname VARCHAR(255) NOT NULL," + 
                                                     "lastname VARCHAR(255) NOT NULL," +
+                                                    "full_name VARCHAR(255) UNIQUE," +
                                                     "profession VARCHAR(255) DEFAULT 'not specified'," +
                                                     "country VARCHAR(255) DEFAULT 'not specified'," +
                                                     "number_donations INT DEFAULT 0," + 
@@ -33,6 +34,13 @@ mycursor.execute("CREATE TABLE IF NOT EXISTS Donations (id INT AUTO_INCREMENT PR
                                                        "donor_id INT NOT NULL,"
                                                        "created_at TIMESTAMP DEFAULT NOW()," + 
                                                        "FOREIGN KEY(donor_id) REFERENCES donors(id))")
+
+# ! adding data to database
+def addFakeDataDonors():
+     mycursor.execute("INSERT INTO donors (firstname, lastname, full_name, profession, country) VALUES ('John', 'Smith', 'JohnSmith', 'baker', 'Belgium')," +
+                                                                                                      "('Elena', 'Jok', 'ElenaJok', 'artist', 'France')," +
+                                                                                                      "('Jean', 'Youlk', 'JeanYoulk', 'painter', 'Poland');")
+#addFakeDataDonors()
 
 
 # * creation of the different tabs of the window

@@ -21,7 +21,7 @@ mycursor.execute("use donations_db;")
 mycursor.execute("CREATE TABLE IF NOT EXISTS Donors (id INT AUTO_INCREMENT PRIMARY KEY," +
                                                     "firstname VARCHAR(255) NOT NULL," + 
                                                     "lastname VARCHAR(255) NOT NULL," +
-                                                    "full_name VARCHAR(255) UNIQUE," +
+                                                    "full_name VARCHAR(255) UNIQUE NOT NULL," +
                                                     "profession VARCHAR(255) DEFAULT 'not specified'," +
                                                     "country VARCHAR(255) DEFAULT 'not specified'," +
                                                     "number_donations INT DEFAULT 0," + 
@@ -35,9 +35,9 @@ mycursor.execute("CREATE TABLE IF NOT EXISTS Donations (id INT AUTO_INCREMENT PR
                                                        "created_at TIMESTAMP DEFAULT NOW()," + 
                                                        "FOREIGN KEY(donor_id) REFERENCES donors(id))")
 
-# ! adding data to database
+# ! adding data to database breaks the database! go to documentation of the library connector
 def addFakeDataDonors():
-     mycursor.execute("INSERT INTO donors (firstname, lastname, full_name, profession, country) VALUES ('John', 'Smith', 'JohnSmith', 'baker', 'Belgium')," +
+     mycursor.execute("INSERT INTO donors (firstname, lastname, full_name, profession, country) VALUES ('John', 'Smith', 'JohnSmith3', 'baker', 'Belgium')," +
                                                                                                       "('Elena', 'Jok', 'ElenaJok', 'artist', 'France')," +
                                                                                                       "('Jean', 'Youlk', 'JeanYoulk', 'painter', 'Poland');")
 #addFakeDataDonors()
@@ -65,7 +65,7 @@ textLabel = tk.Label(tab1,
                     text="This progam will helps with adding and retreiving data from a database. \n\n" + 
                          "The tab 'add data' helps you add rows to the databse.\nYou can enter any data you want and it will add it to the database. \n\n" +  
                          "The tab 'retrieve data' will help you find data inside the database from different options that\nyou choose. \n\n" + 
-                         "this program works by connection to a MySQL server. Please install and start a server on \nyour machine.",
+                         "this program works by connecting to a MySQL server. Please install and start a server on \nyour machine.",
                     justify="left")
 textLabel.pack(side="left")
 

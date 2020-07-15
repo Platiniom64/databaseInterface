@@ -8,7 +8,7 @@ root.geometry("500x500")
 root.title("user interface database")
 
 # * set up of the database connection abd the database itself
-mydb = mysql.connector.connect(host="localhost", user="root", passwd="myPassword")
+mydb = mysql.connector.connect(host="localhost", user="root", passwd="myPassword", autocommit=True)
 
 # this is the obecjt to use when interacting with the database
 mycursor = mydb.cursor()
@@ -35,7 +35,6 @@ mycursor.execute("CREATE TABLE IF NOT EXISTS Donations (id INT AUTO_INCREMENT PR
                                                        "created_at TIMESTAMP DEFAULT NOW()," + 
                                                        "FOREIGN KEY(donor_id) REFERENCES donors(id))")
 
-# ! adding data to database breaks the database! go to documentation of the library connector
 def addFakeDataDonors():
      mycursor.execute("INSERT INTO donors (firstname, lastname, full_name, profession, country) VALUES ('John', 'Smith', 'JohnSmith3', 'baker', 'Belgium')," +
                                                                                                       "('Elena', 'Jok', 'ElenaJok', 'artist', 'France')," +

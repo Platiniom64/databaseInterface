@@ -21,12 +21,12 @@ mycursor.execute("use donations_db;")
 mycursor.execute("CREATE TABLE IF NOT EXISTS Donors (id INT AUTO_INCREMENT PRIMARY KEY," +
                                                     "firstname VARCHAR(255) NOT NULL," + 
                                                     "lastname VARCHAR(255) NOT NULL," +
-                                                    "full_name VARCHAR(255) UNIQUE NOT NULL," +
                                                     "profession VARCHAR(255) DEFAULT 'not specified'," +
                                                     "country VARCHAR(255) DEFAULT 'not specified'," +
                                                     "number_donations INT DEFAULT 0," + 
                                                     "total_gifted INT DEFAULT 0," +
-                                                    "created_at TIMESTAMP DEFAULT NOW())")
+                                                    "created_at TIMESTAMP DEFAULT NOW()," +
+                                                    "UNIQUE (firstname, lastname))")
 
 mycursor.execute("CREATE TABLE IF NOT EXISTS Donations (id INT AUTO_INCREMENT PRIMARY KEY," + 
                                                        "amount DECIMAL(65, 2) NOT NULL," + 
@@ -36,10 +36,10 @@ mycursor.execute("CREATE TABLE IF NOT EXISTS Donations (id INT AUTO_INCREMENT PR
                                                        "FOREIGN KEY(donor_id) REFERENCES donors(id))")
 
 def addFakeDataDonors():
-     mycursor.execute("INSERT INTO donors (firstname, lastname, full_name, profession, country) VALUES ('John', 'Smith', 'JohnSmith3', 'baker', 'Belgium')," +
-                                                                                                      "('Elena', 'Jok', 'ElenaJok', 'artist', 'France')," +
-                                                                                                      "('Jean', 'Youlk', 'JeanYoulk', 'painter', 'Poland');")
-#addFakeDataDonors()
+     mycursor.execute("INSERT IGNORE INTO donors (firstname, lastname, profession, country) VALUES ('John', 'Smith', 'baker', 'Belgium')," +
+                                                                                                      "('Elena', 'Jok', 'artist', 'France')," +
+                                                                                                      "('Jean', 'Youlk', 'painter', 'Poland');")
+addFakeDataDonors()
 
 
 # * creation of the different tabs of the window

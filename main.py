@@ -72,6 +72,46 @@ textLabel.pack(side="left")
 titleLabel = tk.Label(tab2, text="Enter new data into database", font="bold")
 titleLabel.pack()
 
+# for adding a donor
+
+frameSubtitle1 = tk.Frame(tab2)
+frameSubtitle1.pack(fill="x")
+subtitle1 = tk.Label(frameSubtitle1, text="Add a new donor here:")
+subtitle1.pack(side="left")
+
+# first name
+frameFirstname = tk.Frame(tab2)
+frameFirstname.pack(fill="x")
+firstnameLabel = tk.Label(frameFirstname, text="first name:", width=20)
+firstnameLabel.pack(side="left")
+firstnameEntry = tk.Entry(frameFirstname)
+firstnameEntry.pack(fill="x")
+
+# last name
+frameLastname = tk.Frame(tab2)
+frameLastname.pack(fill="x")
+lastnameLabel = tk.Label(frameLastname, text="last name:", width=20)
+lastnameLabel.pack(side="left")
+lastnameEntry = tk.Entry(frameLastname)
+lastnameEntry.pack(fill="x")
+
+# professoin
+frameProfession = tk.Frame(tab2)
+frameProfession.pack(fill="x")
+professionLabel = tk.Label(frameProfession, text="profession: (not required)", width=20)
+professionLabel.pack(side="left")
+professionEntry = tk.Entry(frameProfession)
+professionEntry.pack(fill="x")
+
+frameCountry = tk.Frame(tab2)
+frameCountry.pack(fill="x")
+countryLabel = tk.Label(frameCountry, text="country: (not required)", width=20)
+countryLabel.pack(side="left")
+countryEntry = tk.Entry(frameCountry)
+countryEntry.pack(fill="x")
+
+
+
 # * set up of the third tab
 titleLabel = tk.Label(tab3, text="retreive data from database", font="bold")
 titleLabel.pack()

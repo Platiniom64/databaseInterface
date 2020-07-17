@@ -72,7 +72,7 @@ textLabel.pack(side="left")
 titleLabel = tk.Label(tab2, text="Enter new data into database", font="bold")
 titleLabel.pack()
 
-# for adding a donor
+# ----- for adding a donor -----
 
 frameSubtitle1 = tk.Frame(tab2)
 frameSubtitle1.pack(fill="x")
@@ -103,6 +103,7 @@ professionLabel.pack(side="left")
 professionEntry = tk.Entry(frameProfession)
 professionEntry.pack(fill="x")
 
+# country
 frameCountry = tk.Frame(tab2)
 frameCountry.pack(fill="x")
 countryLabel = tk.Label(frameCountry, text="country: (not required)", width=20)
@@ -110,6 +111,21 @@ countryLabel.pack(side="left")
 countryEntry = tk.Entry(frameCountry)
 countryEntry.pack(fill="x")
 
+# button
+def submitInfoDonor():
+     firstname = firstnameEntry.get()
+     lastname = lastnameEntry.get()
+     profession = "_".join(professionEntry.get().split())
+     country = countryEntry.get()
+
+     mycursor.execute("INSERT INTO donors (firstname, lastname, profession, country) VALUES ('" + firstname + "', '" +
+                                                                                                 lastname + "', '" +
+                                                                                                 profession + "', '" +
+                                                                                                 country + "')")
+
+
+buttonSubmitDonor = tk.Button(tab2, text="submit info into database", command=submitInfoDonor)
+buttonSubmitDonor.pack(fill="x")
 
 
 # * set up of the third tab

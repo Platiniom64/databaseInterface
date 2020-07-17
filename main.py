@@ -111,21 +111,40 @@ countryLabel.pack(side="left")
 countryEntry = tk.Entry(frameCountry)
 countryEntry.pack(fill="x")
 
-# button
+
+
+
+errorText1 = tk.StringVar()
+errorText1.set("")
+errorLabel1 = tk.Label(tab2, textvariable=errorText1)
+
+# button that submits info from the entry text boxes to the database
 def submitInfoDonor():
      firstname = firstnameEntry.get()
      lastname = lastnameEntry.get()
      profession = "_".join(professionEntry.get().split())
      country = countryEntry.get()
 
-     mycursor.execute("INSERT INTO donors (firstname, lastname, profession, country) VALUES ('" + firstname + "', '" +
-                                                                                                 lastname + "', '" +
-                                                                                                 profession + "', '" +
-                                                                                                 country + "')")
+     try:
+          mycursor.execute("INSERT INTO donors (firstname, lastname, profession, country) VALUES ('" + firstname + "', '" +
+                                                                                                    lastname + "', '" +
+                                                                                                    profession + "', '" +
+                                                                                                    country + "')")
+          firstnameEntry.delete(0,'end')
+          lastnameEntry.delete(0,'end')
+          professionEntry.delete(0, 'end')
+          countryEntry.delete(0, 'end')
 
+     except:
+          errorText1.set("error occured")
 
 buttonSubmitDonor = tk.Button(tab2, text="submit info into database", command=submitInfoDonor)
+
 buttonSubmitDonor.pack(fill="x")
+errorLabel1.pack()
+
+
+
 
 
 # * set up of the third tab

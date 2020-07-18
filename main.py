@@ -17,6 +17,11 @@ mycursor = mydb.cursor()
 mycursor.execute("CREATE DATABASE IF NOT EXISTS donations_db;")
 mycursor.execute("use donations_db;")
 
+
+# ! whenever you run the program you delete the previous talbe so that you can play around with the features
+mycorsor.execute("DROP TABLE donations;")
+mycorsor.execute("DROP TABLE donors;")
+
 # create tables for database
 mycursor.execute("CREATE TABLE IF NOT EXISTS Donors (id INT AUTO_INCREMENT PRIMARY KEY," +
                                                     "firstname VARCHAR(255) NOT NULL," + 
@@ -112,17 +117,16 @@ countryEntry = tk.Entry(frameCountry)
 countryEntry.pack(fill="x")
 
 
-
-
-errorText1 = tk.StringVar()
-errorText1.set("")
-errorLabel1 = tk.Label(tab2, textvariable=errorText1)
+# this is the text that gives info about the process
+sideText1 = tk.StringVar()
+sideText1.set("")
+sideText1Label = tk.Label(tab2, textvariable=sideText1)
 
 # button that submits info from the entry text boxes to the database
 def submitInfoDonor():
      firstname = firstnameEntry.get()
      lastname = lastnameEntry.get()
-     profession = "_".join(professionEntry.get().split())
+     profession = professionEntry.get()
      country = countryEntry.get()
 
      try:
@@ -135,13 +139,90 @@ def submitInfoDonor():
           professionEntry.delete(0, 'end')
           countryEntry.delete(0, 'end')
 
+          sideText1.set("data successfully added to the table")
+
      except:
-          errorText1.set("error occured")
+          sideText1.set("error occured")
 
 buttonSubmitDonor = tk.Button(tab2, text="submit info into database", command=submitInfoDonor)
 
 buttonSubmitDonor.pack(fill="x")
-errorLabel1.pack()
+sideText1Label.pack()
+
+
+# ----- for adding a donation -----
+
+frameSubtitle2 = tk.Frame(tab2)
+frameSubtitle2.pack(fill="x")
+subtitle2Label = tk.Label(frameSubtitle2, text="Add a new donation here:")
+subtitle2Label.pack(side="left")
+
+# amount of money for donation
+frameAmount = tk.Frame(tab2)
+frameAmount.pack(fill="x")
+amountLabel = tk.Label(frameAmount, text="amount in pounds:", width=20)
+amountLabel.pack(side="left")
+amountEntry = tk.Entry(frameAmount)
+amountEntry.pack(fill="x")
+
+# type of donation
+frameTypeDonation = tk.Frame(tab2)
+frameTypeDonation.pack(fill="x")
+typeDonationLabel = tk.Label(frameTypeDonation, text="type of donation:", width=20)
+typeDonationLabel.pack(side="left")
+typeDonationEntry = tk.Entry(frameTypeDonation)
+typeDonationEntry.pack(fill="x")
+
+# donor first name
+frameDonorFirstName = tk.Frame(tab2)
+frameDonorFirstName.pack(fill="x")
+donorFirstNameLabel = tk.Label(frameDonorFirstName, text="donor first name:", width=20)
+donorFirstNameLabel.pack(side="left")
+donorFirstNameEntry = tk.Entry(frameDonorFirstName)
+donorFirstNameEntry.pack(fill="x")
+
+# donor last name
+frameDonorLastName = tk.Frame(tab2)
+frameDonorLastName.pack(fill="x")
+donorLastNameLabel = tk.Label(frameDonorLastName, text="donor last name:", width=20)
+donorLastNameLabel.pack(side="left")
+donorLastNameEntry = tk.Entry(frameDonorLastName)
+donorLastNameEntry.pack(fill="x")
+
+
+# this is the text that gives info about the process of the transaction
+sideText2 = tk.StringVar()
+sideText2.set("")
+sideText2Label = tk.Label(tab2, textvariable=sideText2)
+
+# button that submits info from the entry text boxes to the database
+def submitInfoDonation():
+     amount = amountEntry.get()
+     typeDonation = typeDonationEntry.get()
+     donorFirstName = donorFirstNameEntry.get()
+     donorLastName = donorLastNameEntry.get()
+
+     try:
+          """
+          mycursor.execute("INSERT INTO donations (prof, lastname, profession, country) VALUES ('" + firstname + "', '" +
+                                                                                                    lastname + "', '" +
+                                                                                                    profession + "', '" +
+                                                                                                    country + "')")
+          firstnameEntry.delete(0,'end')
+          lastnameEntry.delete(0,'end')
+          professionEntry.delete(0, 'end')
+          countryEntry.delete(0, 'end')
+          """
+          sideText2.set("data successfully added to the table")
+
+     except:
+          sideText2.set("error occured")
+
+buttonSubmitDonation = tk.Button(tab2, text="submit info into database", command=submitInfoDonation)
+
+buttonSubmitDonation.pack(fill="x")
+sideText2Label.pack()
+
 
 
 

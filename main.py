@@ -19,8 +19,8 @@ mycursor.execute("use donations_db;")
 
 
 # ! whenever you run the program you delete the previous talbe so that you can play around with the features
-mycorsor.execute("DROP TABLE donations;")
-mycorsor.execute("DROP TABLE donors;")
+mycursor.execute("DROP TABLE donations;")
+mycursor.execute("DROP TABLE donors;")
 
 # create tables for database
 mycursor.execute("CREATE TABLE IF NOT EXISTS Donors (id INT AUTO_INCREMENT PRIMARY KEY," +
@@ -203,16 +203,16 @@ def submitInfoDonation():
      donorLastName = donorLastNameEntry.get()
 
      try:
-          """
-          mycursor.execute("INSERT INTO donations (prof, lastname, profession, country) VALUES ('" + firstname + "', '" +
-                                                                                                    lastname + "', '" +
-                                                                                                    profession + "', '" +
-                                                                                                    country + "')")
-          firstnameEntry.delete(0,'end')
-          lastnameEntry.delete(0,'end')
-          professionEntry.delete(0, 'end')
-          countryEntry.delete(0, 'end')
-          """
+          
+          mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES ('" + amount + "', '" +
+                                                                                        typeDonation + "', " +
+                                                                                     " (SELECT id FROM donors WHERE firstname = '" + donorFirstName + "' and " +
+                                                                                                                   "lastname = '" + donorLastName + "' ) )")
+          amountEntry.delete(0,'end')
+          typeDonationEntry.delete(0,'end')
+          donorFirstNameEntry.delete(0, 'end')
+          donorLastNameEntry.delete(0, 'end')
+          
           sideText2.set("data successfully added to the table")
 
      except:
@@ -222,10 +222,6 @@ buttonSubmitDonation = tk.Button(tab2, text="submit info into database", command
 
 buttonSubmitDonation.pack(fill="x")
 sideText2Label.pack()
-
-
-
-
 
 
 # * set up of the third tab

@@ -40,6 +40,10 @@ mycursor.execute("CREATE TABLE IF NOT EXISTS Donations (id INT AUTO_INCREMENT PR
                                                        "created_at TIMESTAMP DEFAULT NOW()," + 
                                                        "FOREIGN KEY(donor_id) REFERENCES donors(id))")
 
+# this adds the anonymous donor so that we can add anonnymous donations
+mycursor.execute("INSERT INTO donors (firstname, lastname) VALUES ('anonymous', 'anonymous')")
+
+# ! this method is for testing purpouses
 def addFakeDataDonors():
      mycursor.execute("INSERT IGNORE INTO donors (firstname, lastname, profession, country) VALUES ('John', 'Smith', 'baker', 'Belgium')," +
                                                                                                       "('Elena', 'Jok', 'artist', 'France')," +
@@ -215,15 +219,22 @@ sideText2Label = tk.Label(tab2, textvariable=sideText2)
 
 # button that submits info from the entry text boxes to the database
 def submitInfoDonation():
-     amount = amountEntry.get()
-     typeDonation = typeDonationEntry.get()
-     donorFirstName = donorFirstNameEntry.get()
-     donorLastName = donorLastNameEntry.get()
+     if anonymousVar.get() == 0:
+          amount = amountEntry.get()
+          typeDonation = typeDonationEntry.get()
+          donorFirstName = donorFirstNameEntry.get()
+          donorLastName = donorLastNameEntry.get()
+     
+     else:
+          amount = amountEntry.get()
+          typeDonation = typeDonationEntry.get()
+          donorFirstName = "anonymous"
+          donorLastName = "anonymous"
 
      try:
           
           mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES ('" + amount + "', '" +
-                                                                                        typeDonation + "', " +
+                                                                                     typeDonation + "', " +
                                                                                      " (SELECT id FROM donors WHERE firstname = '" + donorFirstName + "' and " +
                                                                                                                    "lastname = '" + donorLastName + "' ) )")
           amountEntry.delete(0,'end')
@@ -237,6 +248,7 @@ def submitInfoDonation():
           # ! for debugging purposes
           print(e)
           sideText2.set("error occured")
+
 
 buttonSubmitDonation = tk.Button(tab2, text="submit info into database", command=submitInfoDonation)
 

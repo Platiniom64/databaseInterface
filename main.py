@@ -175,20 +175,8 @@ typeDonationLabel.pack(side="left")
 typeDonationEntry = tk.Entry(frameTypeDonation)
 typeDonationEntry.pack(fill="x")
 
-# for the type of donor, if he is anonymous
-def switchAnonymousDonor():
-     pass
-
-
-frameAnonymous = tk.Frame(tab2)
-frameAnonymous.pack(fill="x")
-anonymousVar = tk.IntVar()
-anonymousCheckBox = tk.Checkbutton(frameAnonymous, text="Anonymous donation ", variable=anonymousVar, command=switchAnonymousDonor)
-anonymousCheckBox.pack(side="left")
-
 # donor first name
 frameDonorFirstName = tk.Frame(tab2)
-frameDonorFirstName.pack(fill="x")
 donorFirstNameLabel = tk.Label(frameDonorFirstName, text="donor first name:", width=20)
 donorFirstNameLabel.pack(side="left")
 donorFirstNameEntry = tk.Entry(frameDonorFirstName)
@@ -196,12 +184,29 @@ donorFirstNameEntry.pack(fill="x")
 
 # donor last name
 frameDonorLastName = tk.Frame(tab2)
-frameDonorLastName.pack(fill="x")
 donorLastNameLabel = tk.Label(frameDonorLastName, text="donor last name:", width=20)
 donorLastNameLabel.pack(side="left")
 donorLastNameEntry = tk.Entry(frameDonorLastName)
 donorLastNameEntry.pack(fill="x")
 
+# for the type of donor, if he is anonymous
+def switchAnonymousDonor():
+     if anonymousVar.get() == 1:
+          donorFirstNameEntry.config(state="disabled")
+          donorLastNameEntry.config(state="disabled")
+     else:
+          donorFirstNameEntry.config(state="normal")
+          donorLastNameEntry.config(state="normal")
+
+frameAnonymous = tk.Frame(tab2)
+frameAnonymous.pack(fill="x")
+anonymousVar = tk.IntVar()
+anonymousCheckBox = tk.Checkbutton(frameAnonymous, text="Anonymous donation ", variable=anonymousVar, onvalue=1, offvalue=0, command=switchAnonymousDonor)
+anonymousCheckBox.pack(side="left")
+
+# so that thigs are in the right order
+frameDonorFirstName.pack(fill="x")
+frameDonorLastName.pack(fill="x")
 
 # this is the text that gives info about the process of the transaction
 sideText2 = tk.StringVar()

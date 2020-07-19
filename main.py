@@ -141,7 +141,9 @@ def submitInfoDonor():
 
           sideText1.set("data successfully added to the table")
 
-     except:
+     except Exception as e:
+          # ! for debugging purposes
+          print(e)
           sideText1.set("error occured")
 
 buttonSubmitDonor = tk.Button(tab2, text="submit info into database", command=submitInfoDonor)
@@ -172,6 +174,17 @@ typeDonationLabel = tk.Label(frameTypeDonation, text="type of donation:", width=
 typeDonationLabel.pack(side="left")
 typeDonationEntry = tk.Entry(frameTypeDonation)
 typeDonationEntry.pack(fill="x")
+
+# for the type of donor, if he is anonymous
+def switchAnonymousDonor():
+     pass
+
+
+frameAnonymous = tk.Frame(tab2)
+frameAnonymous.pack(fill="x")
+anonymousVar = tk.IntVar()
+anonymousCheckBox = tk.Checkbutton(frameAnonymous, text="Anonymous donation ", variable=anonymousVar, command=switchAnonymousDonor)
+anonymousCheckBox.pack(side="left")
 
 # donor first name
 frameDonorFirstName = tk.Frame(tab2)
@@ -215,7 +228,9 @@ def submitInfoDonation():
           
           sideText2.set("data successfully added to the table")
 
-     except:
+     except Exception as e:
+          # ! for debugging purposes
+          print(e)
           sideText2.set("error occured")
 
 buttonSubmitDonation = tk.Button(tab2, text="submit info into database", command=submitInfoDonation)

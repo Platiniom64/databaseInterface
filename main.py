@@ -48,7 +48,12 @@ def addFakeDataDonors():
      mycursor.execute("INSERT IGNORE INTO donors (firstname, lastname, profession, country) VALUES ('John', 'Smith', 'baker', 'Belgium')," +
                                                                                                       "('Elena', 'Jok', 'artist', 'France')," +
                                                                                                       "('Jean', 'Youlk', 'painter', 'Poland');")
+def addFakeDataDonations():
+     mycursor.execute("INSERT IGNORE INTO donations (amount, type, donor_id) VALUES (50, 'cash', 1), (45, 'card', 2)")
+
+addFakeDataDonations()
 addFakeDataDonors()
+
 
 
 # * creation of the different tabs of the window
@@ -260,6 +265,30 @@ sideText2Label.pack()
 titleLabel = tk.Label(tab3, text="retreive data from database", font="bold")
 titleLabel.pack()
 
+frameButtons = tk.Frame(tab3)
+frameButtons.pack(fill="x")
 
-# opens the root
+frameOutputInfo = tk.Frame(tab3)
+frameOutputInfo.pack(fill="both")
+
+outputInto = tk.Text(frameOutputInfo)
+outputInto.pack(fill="both")
+
+def getAllInfoDonors():
+     mycursor.execute("SELECT * FROM donors;")
+     rows = mycursor.fetchall()
+
+     print(rows)
+getAllInfoDonorButton = tk.Button(frameButtons, text="get all info from donors", command=getAllInfoDonors)
+getAllInfoDonorButton.pack()
+
+def getAllDonations():
+     mycursor.execute("SELECT * FROM donations;")
+     rows = mycursor.fetchall()
+     print(rows)
+getAllInfoDonationsButton = tk.Button(frameButtons, text="get all info about donations", command=getAllDonations)
+getAllInfoDonationsButton.pack()
+
+
+# * opens the root
 root.mainloop()

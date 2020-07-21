@@ -43,16 +43,16 @@ mycursor.execute("CREATE TABLE IF NOT EXISTS Donations (id INT AUTO_INCREMENT PR
 # this adds the anonymous donor so that we can add anonnymous donations
 mycursor.execute("INSERT INTO donors (firstname, lastname) VALUES ('anonymous', 'anonymous')")
 
-# ! this method is for testing purpouses
+# ! this methods are for testing purpouses
 def addFakeDataDonors():
      mycursor.execute("INSERT IGNORE INTO donors (firstname, lastname, profession, country) VALUES ('John', 'Smith', 'baker', 'Belgium')," +
                                                                                                       "('Elena', 'Jok', 'artist', 'France')," +
                                                                                                       "('Jean', 'Youlk', 'painter', 'Poland');")
 def addFakeDataDonations():
-     mycursor.execute("INSERT IGNORE INTO donations (amount, type, donor_id) VALUES (50, 'cash', 1), (45, 'card', 2)")
+     mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES (50, 'cash', 1), (45, 'card', 2);")
 
-addFakeDataDonations()
 addFakeDataDonors()
+addFakeDataDonations()
 
 
 
@@ -271,29 +271,58 @@ frameButtons.pack(fill="x")
 frameOutputInfo = tk.Frame(tab3)
 frameOutputInfo.pack(fill="both")
 
-outputInto = tk.Text(frameOutputInfo)
-outputInto.pack(fill="both")
+outputInfo = tk.Text(frameOutputInfo)
+outputInfo.pack(fill="both")
+
+# this method cleans the output of the databse to a readable table
+def prettyRows(rows):
+     output = ""
+     for row in rows:
+          for element in row:
+               if type(element) is str:
+                    space = "\t\t"
+               else:
+                    space = "\t"
+                    
+               output += str(element) + space
+          output += "\n"
+     return output
+
 
 def getAllInfoDonors():
      mycursor.execute("SELECT * FROM donors;")
      rows = mycursor.fetchall()
 
-     outputInto.delete("1.0", "end")
-     outputInto.insert(tk.END, rows)
+     rows = prettyRows(rows)
+
+     outputInfo.delete("1.0", "end")
+     outputInfo.insert(tk.END, rows)
 
 getAllInfoDonorButton = tk.Button(frameButtons, text="get all info from donors", command=getAllInfoDonors)
-getAllInfoDonorButton.pack()
+getAllInfoDonorButton.pack(side="left")
 
 def getAllDonations():
-     mycursor.execute("SELECT * FROM donations;")
+     mycursor.execute("SELECT * FROM donations, donors WHERE donations.donor_id = donors.id;")
      rows = mycursor.fetchall()
 
-     outputInto.delete("1.0", "end")
-     outputInto.insert(tk.END, rows)
+     rows = prettyRows(rows)
+
+     outputInfo.delete("1.0", "end")
+     outputInfo.insert(tk.END, rows)
 
 getAllInfoDonationsButton = tk.Button(frameButtons, text="get all info about donations", command=getAllDonations)
-getAllInfoDonationsButton.pack()
+getAllInfoDonationsButton.pack(side="left")
 
+def getAllAnonymousDonations():
+     mycursor.execute("SELECT * FROM donations WHERE donor_id = (SELECT id FROM donors WHERE firstname = 'anonymous' and lastname = 'anonymous');")
+     rows = mycursor.fetchall()
+
+     rows = prettyRows(rows)
+
+     outputInfo.delete("1.0", "end")
+     outputInfo.insert(tk.END, rows)
+getAllAnonymousDonationsButton = tk.Button(frameButtons, text="get all anonymous donations", command=getAllAnonymousDonations)
+getAllAnonymousDonationsButton.pack(side="left")
 
 # * opens the root
 root.mainloop()

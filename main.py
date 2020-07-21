@@ -278,14 +278,19 @@ def getAllInfoDonors():
      mycursor.execute("SELECT * FROM donors;")
      rows = mycursor.fetchall()
 
-     print(rows)
+     outputInto.delete("1.0", "end")
+     outputInto.insert(tk.END, rows)
+
 getAllInfoDonorButton = tk.Button(frameButtons, text="get all info from donors", command=getAllInfoDonors)
 getAllInfoDonorButton.pack()
 
 def getAllDonations():
      mycursor.execute("SELECT * FROM donations;")
      rows = mycursor.fetchall()
-     print(rows)
+
+     outputInto.delete("1.0", "end")
+     outputInto.insert(tk.END, rows)
+
 getAllInfoDonationsButton = tk.Button(frameButtons, text="get all info about donations", command=getAllDonations)
 getAllInfoDonationsButton.pack()
 

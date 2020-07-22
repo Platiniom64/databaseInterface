@@ -254,7 +254,6 @@ def submitInfoDonation():
           print(e)
           sideText2.set("error occured")
 
-
 buttonSubmitDonation = tk.Button(tab2, text="submit info into database", command=submitInfoDonation)
 
 buttonSubmitDonation.pack(fill="x")

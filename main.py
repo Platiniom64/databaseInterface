@@ -265,8 +265,11 @@ sideText2Label.pack()
 titleLabel = tk.Label(tab3, text="retreive data from database", font="bold")
 titleLabel.pack()
 
-frameButtons = tk.Frame(tab3)
-frameButtons.pack(fill="x")
+frameButtons1 = tk.Frame(tab3)
+frameButtons1.pack(fill="x")
+
+frameButtons2 = tk.Frame(tab3)
+frameButtons2.pack(fill="x")
 
 frameOutputInfo = tk.Frame(tab3)
 frameOutputInfo.pack(fill="both")
@@ -298,31 +301,71 @@ def getAllInfoDonors():
      outputInfo.delete("1.0", "end")
      outputInfo.insert(tk.END, rows)
 
-getAllInfoDonorButton = tk.Button(frameButtons, text="get all info from donors", command=getAllInfoDonors)
+getAllInfoDonorButton = tk.Button(frameButtons1, text="get all info from donors", command=getAllInfoDonors)
 getAllInfoDonorButton.pack(side="left")
 
 def getAllDonations():
      mycursor.execute("SELECT * FROM donations, donors WHERE donations.donor_id = donors.id;")
      rows = mycursor.fetchall()
-
      rows = prettyRows(rows)
 
      outputInfo.delete("1.0", "end")
      outputInfo.insert(tk.END, rows)
 
-getAllInfoDonationsButton = tk.Button(frameButtons, text="get all info about donations", command=getAllDonations)
+getAllInfoDonationsButton = tk.Button(frameButtons1, text="get all info about donations", command=getAllDonations)
 getAllInfoDonationsButton.pack(side="left")
 
 def getAllAnonymousDonations():
      mycursor.execute("SELECT * FROM donations WHERE donor_id = (SELECT id FROM donors WHERE firstname = 'anonymous' and lastname = 'anonymous');")
      rows = mycursor.fetchall()
-
      rows = prettyRows(rows)
 
      outputInfo.delete("1.0", "end")
      outputInfo.insert(tk.END, rows)
-getAllAnonymousDonationsButton = tk.Button(frameButtons, text="get all anonymous donations", command=getAllAnonymousDonations)
+getAllAnonymousDonationsButton = tk.Button(frameButtons1, text="get all anonymous donations", command=getAllAnonymousDonations)
 getAllAnonymousDonationsButton.pack(side="left")
+
+def getLast10Donations():
+     mycursor.execute("SELECT * FROM donations, donors WHERE donations.donor_id = donors.id ORDER BY donations.created_at DESC LIMIT 10;")
+     rows = mycursor.fetchall()
+     rows = prettyRows(rows)
+
+     outputInfo.delete("1.0", "end")
+     outputInfo.insert(tk.END, rows)
+
+getAllAnonymousDonationsButton = tk.Button(frameButtons1, text="get last 10 donations", command=getLast10Donations)
+getAllAnonymousDonationsButton.pack(side="left")
+
+# for finding info about one donor
+frameFirstName = tk.Frame(frameButtons2)
+frameFirstName.pack(fill="x", side="left")
+firstNameLabel = tk.Label(frameFirstName, text="first name donor:", width=15)
+firstNameLabel.pack(side="left")
+firstNameEntry = tk.Entry(frameFirstName)
+firstNameEntry.pack(side="left")
+
+frameLastName = tk.Frame(frameButtons2)
+frameLastName.pack(side="left")
+lastNameLabel = tk.Label(frameLastName, text="last name donor:", width=15)
+lastNameLabel.pack(side="left")
+lastNameEntry = tk.Entry(frameLastName)
+lastNameEntry.pack(side="left")
+
+def searchCustomDonor():
+     firstName = firstNameEntry.get()
+     lastName = lastNameEntry.get()
+
+     mycursor.execute("SELECT * FROM donors, donations WHERE donations.donor_id = donors.id and firstname = '" + firstName + "' and lastname = '" + lastName + "';")
+     rows = mycursor.fetchall()
+     rows = prettyRows(rows)
+
+     outputInfo.delete("1.0", "end")
+     outputInfo.insert(tk.END, rows)
+
+searchButton = tk.Button(frameButtons2, text="search", command=searchCustomDonor)
+searchButton.pack(side="left")
+
+
 
 # * opens the root
 root.mainloop()

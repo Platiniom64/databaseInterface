@@ -1,21 +1,18 @@
 import tkinter as tk
 from tkinter import ttk
-import conDB
 
 # * set up of the root window
 root = tk.Tk()
 root.geometry("500x500")
 root.title("user interface database")
 
-# * initialised connection to the database
+import conDB
 conDB.initialiseConnection()
 
 from tools import *
 
-
-# creates the database and choses that one for the commands
+# creates the database if not existant
 mycursor.execute("CREATE DATABASE IF NOT EXISTS donations_db;")
-mycursor.execute("use donations_db;")
 
 # ! whenever you run the program you delete the previous table so that you can play around with the features
 mycursor.execute("DROP TABLE donations;")

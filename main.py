@@ -1,24 +1,23 @@
 import tkinter as tk
 from tkinter import ttk
-import mysql.connector
+import conDB
 
 # * set up of the root window
 root = tk.Tk()
 root.geometry("500x500")
 root.title("user interface database")
 
-# * set up of the database connection abd the database itself
-mydb = mysql.connector.connect(host="localhost", user="root", passwd="myPassword", autocommit=True)
+# * initialised connection to the database
+conDB.initialiseConnection()
 
-# this is the obecjt to use when interacting with the database
-mycursor = mydb.cursor()
+from tools import *
+
 
 # creates the database and choses that one for the commands
 mycursor.execute("CREATE DATABASE IF NOT EXISTS donations_db;")
 mycursor.execute("use donations_db;")
 
-
-# ! whenever you run the program you delete the previous talbe so that you can play around with the features
+# ! whenever you run the program you delete the previous table so that you can play around with the features
 mycursor.execute("DROP TABLE donations;")
 mycursor.execute("DROP TABLE donors;")
 
@@ -44,13 +43,6 @@ mycursor.execute("CREATE TABLE IF NOT EXISTS Donations (id INT AUTO_INCREMENT PR
 mycursor.execute("INSERT INTO donors (firstname, lastname) VALUES ('anonymous', 'anonymous')")
 
 # ! this methods are for testing purpouses
-def addFakeDataDonors():
-     mycursor.execute("INSERT IGNORE INTO donors (firstname, lastname, profession, country) VALUES ('John', 'Smith', 'baker', 'Belgium')," +
-                                                                                                      "('Elena', 'Jok', 'artist', 'France')," +
-                                                                                                      "('Jean', 'Youlk', 'painter', 'Poland');")
-def addFakeDataDonations():
-     mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES (50, 'cash', 1), (45, 'card', 2);")
-
 addFakeDataDonors()
 addFakeDataDonations()
 

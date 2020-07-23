@@ -3,7 +3,7 @@ from tkinter import ttk
 
 # * set up of the root window
 root = tk.Tk()
-root.geometry("500x500")
+root.geometry("600x500")
 root.title("user interface database")
 
 import conDB
@@ -11,30 +11,8 @@ conDB.initialiseConnection()
 
 from tools import *
 
-# creates the database if not existant
-mycursor.execute("CREATE DATABASE IF NOT EXISTS donations_db;")
-
-# ! whenever you run the program you delete the previous table so that you can play around with the features
-mycursor.execute("DROP TABLE donations;")
-mycursor.execute("DROP TABLE donors;")
-
-# create tables for database
-mycursor.execute("CREATE TABLE IF NOT EXISTS Donors (id INT AUTO_INCREMENT PRIMARY KEY," +
-                                                    "firstname VARCHAR(255) NOT NULL," + 
-                                                    "lastname VARCHAR(255) NOT NULL," +
-                                                    "profession VARCHAR(255) DEFAULT 'not specified'," +
-                                                    "country VARCHAR(255) DEFAULT 'not specified'," +
-                                                    "number_donations INT DEFAULT 0," + 
-                                                    "total_gifted INT DEFAULT 0," +
-                                                    "created_at TIMESTAMP DEFAULT NOW()," +
-                                                    "UNIQUE (firstname, lastname))")
-
-mycursor.execute("CREATE TABLE IF NOT EXISTS Donations (id INT AUTO_INCREMENT PRIMARY KEY," + 
-                                                       "amount DECIMAL(65, 2) NOT NULL," + 
-                                                       "type VARCHAR(255) DEFAULT 'not specified'," +
-                                                       "donor_id INT NOT NULL,"
-                                                       "created_at TIMESTAMP DEFAULT NOW()," + 
-                                                       "FOREIGN KEY(donor_id) REFERENCES donors(id))")
+# this creates the database and the tables
+createDatabase()
 
 # this adds the anonymous donor so that we can add anonnymous donations
 mycursor.execute("INSERT INTO donors (firstname, lastname) VALUES ('anonymous', 'anonymous')")
@@ -42,7 +20,6 @@ mycursor.execute("INSERT INTO donors (firstname, lastname) VALUES ('anonymous', 
 # ! this methods are for testing purpouses
 addFakeDataDonors()
 addFakeDataDonations()
-
 
 
 # * creation of the different tabs of the window
@@ -114,38 +91,13 @@ countryLabel.pack(side="left")
 countryEntry = tk.Entry(frameCountry)
 countryEntry.pack(fill="x")
 
-
-# this is the text that gives info about the process
+# this is the text that gives info about the process of the submission to the database
 sideText1 = tk.StringVar()
 sideText1.set("")
 sideText1Label = tk.Label(tab2, textvariable=sideText1)
 
 # button that submits info from the entry text boxes to the database
-def submitInfoDonor():
-     firstname = firstnameEntry.get()
-     lastname = lastnameEntry.get()
-     profession = professionEntry.get()
-     country = countryEntry.get()
-
-     try:
-          mycursor.execute("INSERT INTO donors (firstname, lastname, profession, country) VALUES ('" + firstname + "', '" +
-                                                                                                    lastname + "', '" +
-                                                                                                    profession + "', '" +
-                                                                                                    country + "')")
-          firstnameEntry.delete(0,'end')
-          lastnameEntry.delete(0,'end')
-          professionEntry.delete(0, 'end')
-          countryEntry.delete(0, 'end')
-
-          sideText1.set("data successfully added to the table")
-
-     except Exception as e:
-          # ! for debugging purposes
-          print(e)
-          sideText1.set("error occured")
-
-buttonSubmitDonor = tk.Button(tab2, text="submit info into database", command=submitInfoDonor)
-
+buttonSubmitDonor = tk.Button(tab2, text="submit info into database", command=lambda:submitInfoDonor(firstnameEntry, lastnameEntry, professionEntry, countryEntry, sideText1))
 buttonSubmitDonor.pack(fill="x")
 sideText1Label.pack()
 
@@ -188,18 +140,10 @@ donorLastNameEntry = tk.Entry(frameDonorLastName)
 donorLastNameEntry.pack(fill="x")
 
 # for the type of donor, if he is anonymous
-def switchAnonymousDonor():
-     if anonymousVar.get() == 1:
-          donorFirstNameEntry.config(state="disabled")
-          donorLastNameEntry.config(state="disabled")
-     else:
-          donorFirstNameEntry.config(state="normal")
-          donorLastNameEntry.config(state="normal")
-
 frameAnonymous = tk.Frame(tab2)
 frameAnonymous.pack(fill="x")
 anonymousVar = tk.IntVar()
-anonymousCheckBox = tk.Checkbutton(frameAnonymous, text="Anonymous donation ", variable=anonymousVar, onvalue=1, offvalue=0, command=switchAnonymousDonor)
+anonymousCheckBox = tk.Checkbutton(frameAnonymous, text="Anonymous donation ", variable=anonymousVar, onvalue=1, offvalue=0, command=lambda:switchAnonymousDonor(anonymousVar, donorFirstNameEntry, donorLastNameEntry))
 anonymousCheckBox.pack(side="left")
 
 # so that thigs are in the right order
@@ -212,40 +156,9 @@ sideText2.set("")
 sideText2Label = tk.Label(tab2, textvariable=sideText2)
 
 # button that submits info from the entry text boxes to the database
-def submitInfoDonation():
-     if anonymousVar.get() == 0:
-          amount = amountEntry.get()
-          typeDonation = typeDonationEntry.get()
-          donorFirstName = donorFirstNameEntry.get()
-          donorLastName = donorLastNameEntry.get()
-     
-     else:
-          amount = amountEntry.get()
-          typeDonation = typeDonationEntry.get()
-          donorFirstName = "anonymous"
-          donorLastName = "anonymous"
-
-     try:
-          
-          mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES ('" + amount + "', '" +
-                                                                                     typeDonation + "', " +
-                                                                                     " (SELECT id FROM donors WHERE firstname = '" + donorFirstName + "' and " +
-                                                                                                                   "lastname = '" + donorLastName + "' ) )")
-          amountEntry.delete(0,'end')
-          typeDonationEntry.delete(0,'end')
-          donorFirstNameEntry.delete(0, 'end')
-          donorLastNameEntry.delete(0, 'end')
-          
-          sideText2.set("data successfully added to the table")
-
-     except Exception as e:
-          # ! for debugging purposes
-          print(e)
-          sideText2.set("error occured")
-
-buttonSubmitDonation = tk.Button(tab2, text="submit info into database", command=submitInfoDonation)
-
+buttonSubmitDonation = tk.Button(tab2, text="submit info into database", command=lambda:submitInfoDonation(anonymousVar, amountEntry, typeDonationEntry, donorFirstNameEntry, donorLastNameEntry, sideText2))
 buttonSubmitDonation.pack(fill="x")
+
 sideText2Label.pack()
 
 
@@ -265,63 +178,16 @@ frameOutputInfo.pack(fill="both")
 outputInfo = tk.Text(frameOutputInfo)
 outputInfo.pack(fill="both")
 
-# this method cleans the output of the databse to a readable table
-def prettyRows(rows):
-     output = ""
-     for row in rows:
-          for element in row:
-               if type(element) is str:
-                    space = "\t\t"
-               else:
-                    space = "\t"
-                    
-               output += str(element) + space
-          output += "\n"
-     return output
-
-
-def getAllInfoDonors():
-     mycursor.execute("SELECT * FROM donors;")
-     rows = mycursor.fetchall()
-
-     rows = prettyRows(rows)
-
-     outputInfo.delete("1.0", "end")
-     outputInfo.insert(tk.END, rows)
-
-getAllInfoDonorButton = tk.Button(frameButtons1, text="get all info from donors", command=getAllInfoDonors)
+getAllInfoDonorButton = tk.Button(frameButtons1, text="get all info from donors", command=lambda:getAllInfoDonors(outputInfo))
 getAllInfoDonorButton.pack(side="left")
 
-def getAllDonations():
-     mycursor.execute("SELECT * FROM donations, donors WHERE donations.donor_id = donors.id;")
-     rows = mycursor.fetchall()
-     rows = prettyRows(rows)
-
-     outputInfo.delete("1.0", "end")
-     outputInfo.insert(tk.END, rows)
-
-getAllInfoDonationsButton = tk.Button(frameButtons1, text="get all info about donations", command=getAllDonations)
+getAllInfoDonationsButton = tk.Button(frameButtons1, text="get all info about donations", command=lambda:getAllDonations(outputInfo))
 getAllInfoDonationsButton.pack(side="left")
 
-def getAllAnonymousDonations():
-     mycursor.execute("SELECT * FROM donations WHERE donor_id = (SELECT id FROM donors WHERE firstname = 'anonymous' and lastname = 'anonymous');")
-     rows = mycursor.fetchall()
-     rows = prettyRows(rows)
-
-     outputInfo.delete("1.0", "end")
-     outputInfo.insert(tk.END, rows)
-getAllAnonymousDonationsButton = tk.Button(frameButtons1, text="get all anonymous donations", command=getAllAnonymousDonations)
+getAllAnonymousDonationsButton = tk.Button(frameButtons1, text="get all anonymous donations", command=lambda:getAllAnonymousDonations(outputInfo))
 getAllAnonymousDonationsButton.pack(side="left")
 
-def getLast10Donations():
-     mycursor.execute("SELECT * FROM donations, donors WHERE donations.donor_id = donors.id ORDER BY donations.created_at DESC LIMIT 10;")
-     rows = mycursor.fetchall()
-     rows = prettyRows(rows)
-
-     outputInfo.delete("1.0", "end")
-     outputInfo.insert(tk.END, rows)
-
-getAllAnonymousDonationsButton = tk.Button(frameButtons1, text="get last 10 donations", command=getLast10Donations)
+getAllAnonymousDonationsButton = tk.Button(frameButtons1, text="get last 10 donations", command=lambda:getLast10Donations(outputInfo))
 getAllAnonymousDonationsButton.pack(side="left")
 
 # for finding info about one donor
@@ -339,20 +205,8 @@ lastNameLabel.pack(side="left")
 lastNameEntry = tk.Entry(frameLastName)
 lastNameEntry.pack(side="left")
 
-def searchCustomDonor():
-     firstName = firstNameEntry.get()
-     lastName = lastNameEntry.get()
-
-     mycursor.execute("SELECT * FROM donors, donations WHERE donations.donor_id = donors.id and firstname = '" + firstName + "' and lastname = '" + lastName + "';")
-     rows = mycursor.fetchall()
-     rows = prettyRows(rows)
-
-     outputInfo.delete("1.0", "end")
-     outputInfo.insert(tk.END, rows)
-
-searchButton = tk.Button(frameButtons2, text="search", command=searchCustomDonor)
+searchButton = tk.Button(frameButtons2, text="search", command=lambda:searchCustomDonor(firstNameEntry, lastNameEntry, outputInfo))
 searchButton.pack(side="left")
-
 
 
 # * opens the root

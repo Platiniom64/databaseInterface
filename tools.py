@@ -35,6 +35,70 @@ def addFakeDataDonors():
 def addFakeDataDonations():
     mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES (50, 'cash', 1), (45, 'card', 2);")
 
+# * for the second tab, about adding data to the database
+def submitInfoDonor(firstnameEntry, lastnameEntry, professionEntry, countryEntry, sideText1):
+     firstname = firstnameEntry.get()
+     lastname = lastnameEntry.get()
+     profession = professionEntry.get()
+     country = countryEntry.get()
+
+     try:
+          mycursor.execute("INSERT INTO donors (firstname, lastname, profession, country) VALUES ('" + firstname + "', '" +
+                                                                                                    lastname + "', '" +
+                                                                                                    profession + "', '" +
+                                                                                                    country + "')")
+          firstnameEntry.delete(0,'end')
+          lastnameEntry.delete(0,'end')
+          professionEntry.delete(0, 'end')
+          countryEntry.delete(0, 'end')
+
+          sideText1.set("data successfully added to the table")
+
+     except Exception as e:
+          # ! for debugging purposes
+          print(e)
+          
+          sideText1.set("error occured")
+
+def switchAnonymousDonor(anonymousVar, donorFirstNameEntry, donorLastNameEntry):
+     if anonymousVar.get() == 1:
+          donorFirstNameEntry.config(state="disabled")
+          donorLastNameEntry.config(state="disabled")
+     else:
+          donorFirstNameEntry.config(state="normal")
+          donorLastNameEntry.config(state="normal")
+
+def submitInfoDonation(anonymousVar, amountEntry, typeDonationEntry, donorFirstNameEntry, donorLastNameEntry, sideText2):
+     if anonymousVar.get() == 0:
+          amount = amountEntry.get()
+          typeDonation = typeDonationEntry.get()
+          donorFirstName = donorFirstNameEntry.get()
+          donorLastName = donorLastNameEntry.get()
+     
+     else:
+          amount = amountEntry.get()
+          typeDonation = typeDonationEntry.get()
+          donorFirstName = "anonymous"
+          donorLastName = "anonymous"
+
+     try:
+          
+          mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES ('" + amount + "', '" +
+                                                                                     typeDonation + "', " +
+                                                                                     " (SELECT id FROM donors WHERE firstname = '" + donorFirstName + "' and " +
+                                                                                                                   "lastname = '" + donorLastName + "' ) )")
+          amountEntry.delete(0,'end')
+          typeDonationEntry.delete(0,'end')
+          donorFirstNameEntry.delete(0, 'end')
+          donorLastNameEntry.delete(0, 'end')
+          
+          sideText2.set("data successfully added to the table")
+
+     except Exception as e:
+          # ! for debugging purposes
+          print(e)
+          sideText2.set("error occured")
+
 # this method cleans the output of the databse to a readable table
 def prettyRows(rows):
      output = ""

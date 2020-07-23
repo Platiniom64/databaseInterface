@@ -3,7 +3,7 @@ from tkinter import ttk
 
 # * set up of the root window
 root = tk.Tk()
-root.geometry("500x500")
+root.geometry("600x500")
 root.title("user interface database")
 
 import conDB
@@ -91,39 +91,13 @@ countryLabel.pack(side="left")
 countryEntry = tk.Entry(frameCountry)
 countryEntry.pack(fill="x")
 
-
-# this is the text that gives info about the process
+# this is the text that gives info about the process of the submission to the database
 sideText1 = tk.StringVar()
 sideText1.set("")
 sideText1Label = tk.Label(tab2, textvariable=sideText1)
 
 # button that submits info from the entry text boxes to the database
-def submitInfoDonor():
-     firstname = firstnameEntry.get()
-     lastname = lastnameEntry.get()
-     profession = professionEntry.get()
-     country = countryEntry.get()
-
-     try:
-          mycursor.execute("INSERT INTO donors (firstname, lastname, profession, country) VALUES ('" + firstname + "', '" +
-                                                                                                    lastname + "', '" +
-                                                                                                    profession + "', '" +
-                                                                                                    country + "')")
-          firstnameEntry.delete(0,'end')
-          lastnameEntry.delete(0,'end')
-          professionEntry.delete(0, 'end')
-          countryEntry.delete(0, 'end')
-
-          sideText1.set("data successfully added to the table")
-
-     except Exception as e:
-          # ! for debugging purposes
-          print(e)
-          
-          sideText1.set("error occured")
-
-buttonSubmitDonor = tk.Button(tab2, text="submit info into database", command=submitInfoDonor)
-
+buttonSubmitDonor = tk.Button(tab2, text="submit info into database", command=lambda:submitInfoDonor(firstnameEntry, lastnameEntry, professionEntry, countryEntry, sideText1))
 buttonSubmitDonor.pack(fill="x")
 sideText1Label.pack()
 
@@ -166,18 +140,10 @@ donorLastNameEntry = tk.Entry(frameDonorLastName)
 donorLastNameEntry.pack(fill="x")
 
 # for the type of donor, if he is anonymous
-def switchAnonymousDonor():
-     if anonymousVar.get() == 1:
-          donorFirstNameEntry.config(state="disabled")
-          donorLastNameEntry.config(state="disabled")
-     else:
-          donorFirstNameEntry.config(state="normal")
-          donorLastNameEntry.config(state="normal")
-
 frameAnonymous = tk.Frame(tab2)
 frameAnonymous.pack(fill="x")
 anonymousVar = tk.IntVar()
-anonymousCheckBox = tk.Checkbutton(frameAnonymous, text="Anonymous donation ", variable=anonymousVar, onvalue=1, offvalue=0, command=switchAnonymousDonor)
+anonymousCheckBox = tk.Checkbutton(frameAnonymous, text="Anonymous donation ", variable=anonymousVar, onvalue=1, offvalue=0, command=lambda:switchAnonymousDonor(anonymousVar, donorFirstNameEntry, donorLastNameEntry))
 anonymousCheckBox.pack(side="left")
 
 # so that thigs are in the right order
@@ -190,40 +156,9 @@ sideText2.set("")
 sideText2Label = tk.Label(tab2, textvariable=sideText2)
 
 # button that submits info from the entry text boxes to the database
-def submitInfoDonation():
-     if anonymousVar.get() == 0:
-          amount = amountEntry.get()
-          typeDonation = typeDonationEntry.get()
-          donorFirstName = donorFirstNameEntry.get()
-          donorLastName = donorLastNameEntry.get()
-     
-     else:
-          amount = amountEntry.get()
-          typeDonation = typeDonationEntry.get()
-          donorFirstName = "anonymous"
-          donorLastName = "anonymous"
-
-     try:
-          
-          mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES ('" + amount + "', '" +
-                                                                                     typeDonation + "', " +
-                                                                                     " (SELECT id FROM donors WHERE firstname = '" + donorFirstName + "' and " +
-                                                                                                                   "lastname = '" + donorLastName + "' ) )")
-          amountEntry.delete(0,'end')
-          typeDonationEntry.delete(0,'end')
-          donorFirstNameEntry.delete(0, 'end')
-          donorLastNameEntry.delete(0, 'end')
-          
-          sideText2.set("data successfully added to the table")
-
-     except Exception as e:
-          # ! for debugging purposes
-          print(e)
-          sideText2.set("error occured")
-
-buttonSubmitDonation = tk.Button(tab2, text="submit info into database", command=submitInfoDonation)
-
+buttonSubmitDonation = tk.Button(tab2, text="submit info into database", command=lambda:submitInfoDonation(anonymousVar, amountEntry, typeDonationEntry, donorFirstNameEntry, donorLastNameEntry, sideText2))
 buttonSubmitDonation.pack(fill="x")
+
 sideText2Label.pack()
 
 
@@ -272,7 +207,6 @@ lastNameEntry.pack(side="left")
 
 searchButton = tk.Button(frameButtons2, text="search", command=lambda:searchCustomDonor(firstNameEntry, lastNameEntry, outputInfo))
 searchButton.pack(side="left")
-
 
 
 # * opens the root

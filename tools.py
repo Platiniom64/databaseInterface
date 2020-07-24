@@ -35,13 +35,24 @@ def addFakeDataDonors():
 def addFakeDataDonations():
     mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES (50, 'cash', 1), (45, 'card', 2);")
 
+def setTriggerNumberDonations():
+     mycursor.execute("CREATE TRIGGER number_donation_add BEFORE INSERT ON donations " +
+                      "FOR EACH ROW " +
+                      "BEGIN " +
+                         "UPDATE donors " +
+                         "SET "+
+                              "number_donations = number_donations + 1 " +
+                         "WHERE donors.id = NEW.donor_id; " +
+                      "END;")
 
-def updateNumber_donations(donor_id):
-     mycursor.execute("UPDATE donors " + 
-                         "SET " + 
-                              "number_donations = (SELECT COUNT(*) FROM donations WHERE donations.donor_id = " + str(donor_id) + ") " +
-                         "WHERE id = " + str(donor_id))
-                      
+     mycursor.execute("CREATE TRIGGER number_donation_del BEFORE DELETE ON donations " +
+                      "FOR EACH ROW " +
+                      "BEGIN " +
+                         "UPDATE donors " +
+                         "SET "+
+                              "number_donations = number_donations - 1 " +
+                         "WHERE donors.id = OLD.donor_id; " +
+                      "END;")
 
 
 # * for the second tab, about adding data to the database
@@ -90,16 +101,10 @@ def submitInfoDonation(anonymousVar, amountEntry, typeDonationEntry, donorFirstN
           donorFirstName = "anonymous"
           donorLastName = "anonymous"
 
-     try:
-
-          mycursor.execute("(SELECT id FROM donors WHERE firstname = '" + donorFirstName + "' and lastname = '" + donorLastName + "' )")
-          donor_id = mycursor.fetchone()[0]
-          
+     try:          
           mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES ('" + amount + "', '" +
-                                                                                     typeDonation + "', " +
-                                                                                     str(donor_id) + " )")
-          
-          updateNumber_donations(donor_id)
+                                                                                     typeDonation + "', "+
+                                                                                     "(SELECT id FROM donors WHERE firstname = '" + donorFirstName + "' and lastname = '" + donorLastName + "' ) )")
 
           amountEntry.delete(0,'end')
           typeDonationEntry.delete(0,'end')

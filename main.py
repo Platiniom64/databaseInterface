@@ -17,9 +17,12 @@ createDatabase()
 # this adds the anonymous donor so that we can add anonnymous donations
 mycursor.execute("INSERT INTO donors (firstname, lastname) VALUES ('anonymous', 'anonymous')")
 
+setTriggerNumberDonations()
+
 # ! this methods are for testing purpouses
 addFakeDataDonors()
 addFakeDataDonations()
+
 
 
 # * creation of the different tabs of the window

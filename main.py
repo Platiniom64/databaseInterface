@@ -19,6 +19,8 @@ mycursor.execute("INSERT INTO donors (firstname, lastname) VALUES ('anonymous', 
 
 setTriggerNumberDonations()
 
+setTriggerTotalDonated()
+
 # ! this methods are for testing purpouses
 addFakeDataDonors()
 addFakeDataDonations()

@@ -36,7 +36,7 @@ def addFakeDataDonations():
     mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES (50, 'cash', 1), (45, 'card', 2);")
 
 def setTriggerNumberDonations():
-     mycursor.execute("CREATE TRIGGER number_donation_add BEFORE INSERT ON donations " +
+     mycursor.execute("CREATE TRIGGER number_donation_add AFTER INSERT ON donations " +
                       "FOR EACH ROW " +
                       "BEGIN " +
                          "UPDATE donors " +
@@ -45,12 +45,31 @@ def setTriggerNumberDonations():
                          "WHERE donors.id = NEW.donor_id; " +
                       "END;")
 
-     mycursor.execute("CREATE TRIGGER number_donation_del BEFORE DELETE ON donations " +
+     mycursor.execute("CREATE TRIGGER number_donation_del AFTER DELETE ON donations " +
                       "FOR EACH ROW " +
                       "BEGIN " +
                          "UPDATE donors " +
                          "SET "+
                               "number_donations = number_donations - 1 " +
+                         "WHERE donors.id = OLD.donor_id; " +
+                      "END;")
+
+def setTriggerTotalDonated():
+     mycursor.execute("CREATE TRIGGER total_donated_add AFTER INSERT ON donations " +
+                      "FOR EACH ROW " +
+                      "BEGIN " +
+                         "UPDATE donors " +
+                         "SET "+
+                              "total_gifted = total_gifted + NEW.amount " +
+                         "WHERE donors.id = NEW.donor_id; " +
+                      "END;")
+
+     mycursor.execute("CREATE TRIGGER total_donated_del AFTER DELETE ON donations " +
+                      "FOR EACH ROW " +
+                      "BEGIN " +
+                         "UPDATE donors " +
+                         "SET "+
+                              "total_gifted = total_gifted - OLD.amount " +
                          "WHERE donors.id = OLD.donor_id; " +
                       "END;")
 
@@ -101,10 +120,14 @@ def submitInfoDonation(anonymousVar, amountEntry, typeDonationEntry, donorFirstN
           donorFirstName = "anonymous"
           donorLastName = "anonymous"
 
-     try:          
+     try: 
+          
+          mycursor.execute("(SELECT id FROM donors WHERE firstname = '" + donorFirstName + "' and lastname = '" + donorLastName + "' )")
+          donor_id = mycursor.fetchone()[0]
+          
           mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES ('" + amount + "', '" +
-                                                                                     typeDonation + "', "+
-                                                                                     "(SELECT id FROM donors WHERE firstname = '" + donorFirstName + "' and lastname = '" + donorLastName + "' ) )")
+                                                                                     typeDonation + "', " +
+                                                                                     str(donor_id) + " )")
 
           amountEntry.delete(0,'end')
           typeDonationEntry.delete(0,'end')

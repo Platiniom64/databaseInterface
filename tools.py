@@ -35,6 +35,15 @@ def addFakeDataDonors():
 def addFakeDataDonations():
     mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES (50, 'cash', 1), (45, 'card', 2);")
 
+
+def updateNumber_donations(donor_id):
+     mycursor.execute("UPDATE donors " + 
+                         "SET " + 
+                              "number_donations = (SELECT COUNT(*) FROM donations WHERE donations.donor_id = " + str(donor_id) + ") " +
+                         "WHERE id = " + str(donor_id))
+                      
+
+
 # * for the second tab, about adding data to the database
 def submitInfoDonor(firstnameEntry, lastnameEntry, professionEntry, countryEntry, sideText1):
      firstname = firstnameEntry.get()
@@ -82,15 +91,21 @@ def submitInfoDonation(anonymousVar, amountEntry, typeDonationEntry, donorFirstN
           donorLastName = "anonymous"
 
      try:
+
+          mycursor.execute("(SELECT id FROM donors WHERE firstname = '" + donorFirstName + "' and lastname = '" + donorLastName + "' )")
+          donor_id = mycursor.fetchone()[0]
           
           mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES ('" + amount + "', '" +
                                                                                      typeDonation + "', " +
-                                                                                     " (SELECT id FROM donors WHERE firstname = '" + donorFirstName + "' and " +
-                                                                                                                   "lastname = '" + donorLastName + "' ) )")
+                                                                                     str(donor_id) + " )")
+          
+          updateNumber_donations(donor_id)
+
           amountEntry.delete(0,'end')
           typeDonationEntry.delete(0,'end')
           donorFirstNameEntry.delete(0, 'end')
           donorLastNameEntry.delete(0, 'end')
+
           
           sideText2.set("data successfully added to the table")
 
@@ -98,6 +113,7 @@ def submitInfoDonation(anonymousVar, amountEntry, typeDonationEntry, donorFirstN
           # ! for debugging purposes
           print(e)
           sideText2.set("error occured")
+
 
 # this method cleans the output of the databse to a readable table
 def prettyRows(rows):

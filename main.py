@@ -7,7 +7,7 @@ root.geometry("600x500")
 root.title("user interface database")
 
 import conDB
-conDB.initialiseConnection()
+
 
 from tools import *
 
@@ -73,6 +73,17 @@ passLabel = tk.Label(framePass, text="Password: ", width=10)
 passLabel.pack()
 passEntry = tk.Entry(framePass)
 passEntry.pack()
+
+authVar = tk.StringVar()
+authVar.set("no connection established")
+authVarLabel = tk.Label(frameAuth, textvariable=authVar)
+
+buttonConnect = tk.Button(frameAuth, text="connect", command=lambda:conDB.initialiseConnection(userEntry.get(), passEntry.get(), authVar))
+
+
+buttonConnect.pack()
+authVarLabel.pack()
+
 
 # * set up of the second tab
 titleLabel = tk.Label(tab2, text="Enter new data into database", font="bold")

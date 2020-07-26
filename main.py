@@ -26,7 +26,6 @@ addFakeDataDonors()
 addFakeDataDonations()
 
 
-
 # * creation of the different tabs of the window
 rootTab = ttk.Notebook(root)
 
@@ -45,13 +44,35 @@ rootTab.pack(fill="both")
 titleLabel = tk.Label(tab1, text="Information about the program", font="bold")
 titleLabel.pack()
 
-textLabel = tk.Label(tab1,
+frameText = tk.Frame(tab1)
+frameText.pack(fill="both")
+textLabel = tk.Label(frameText,
                     text="This progam will helps with adding and retreiving data from a database. \n\n" + 
                          "The tab 'add data' helps you add rows to the databse.\nYou can enter any data you want and it will add it to the database. \n\n" +  
                          "The tab 'retrieve data' will help you find data inside the database from different options that\nyou choose. \n\n" + 
                          "this program works by connecting to a MySQL server. Please install and start a server on \nyour machine.",
                     justify="left")
 textLabel.pack(side="left")
+
+
+frameAuth = tk.Frame(tab1)
+frameAuth.pack(fill="both")
+subtitleLable = tk.Label(frameAuth, text="Please provide the user and password in order to authenticate")
+subtitleLable.pack()
+
+frameUser = tk.Frame(frameAuth)
+frameUser.pack(fill="x")
+userLabel = tk.Label(frameUser, text="User: ", width=10)
+userLabel.pack()
+userEntry = tk.Entry(frameUser)
+userEntry.pack()
+
+framePass = tk.Frame(frameAuth)
+framePass.pack(fill="x")
+passLabel = tk.Label(framePass, text="Password: ", width=10)
+passLabel.pack()
+passEntry = tk.Entry(framePass)
+passEntry.pack()
 
 # * set up of the second tab
 titleLabel = tk.Label(tab2, text="Enter new data into database", font="bold")

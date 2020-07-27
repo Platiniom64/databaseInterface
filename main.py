@@ -25,8 +25,6 @@ setTriggerTotalDonated()
 addFakeDataDonors()
 addFakeDataDonations()
 
-
-
 # * creation of the different tabs of the window
 rootTab = ttk.Notebook(root)
 
@@ -43,7 +41,7 @@ rootTab.pack(fill="both")
 
 # * set up of the first tab
 titleLabel = tk.Label(tab1, text="Information about the program", font="bold")
-titleLabel.pack()
+titleLabel.pack(side="top")
 
 textLabel = tk.Label(tab1,
                     text="This progam will helps with adding and retreiving data from a database. \n\n" + 
@@ -51,7 +49,8 @@ textLabel = tk.Label(tab1,
                          "The tab 'retrieve data' will help you find data inside the database from different options that\nyou choose. \n\n" + 
                          "this program works by connecting to a MySQL server. Please install and start a server on \nyour machine.",
                     justify="left")
-textLabel.pack(side="left")
+textLabel.pack()
+
 
 # * set up of the second tab
 titleLabel = tk.Label(tab2, text="Enter new data into database", font="bold")

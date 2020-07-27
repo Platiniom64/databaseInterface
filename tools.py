@@ -75,17 +75,43 @@ def setTriggerTotalDonated():
 
 
 # * for the second tab, about adding data to the database
+def parseInfomationDonor(firstname, lastname, profession, country):
+
+     if firstname == "":
+          firstname = "NULL"
+     else:
+          firstname = "'" + firstname + "'"
+
+     if lastname == "":
+          lastname = "NULL"
+     else:
+          lastname = "'" + lastname + "'"
+
+     if profession == "":
+          profession = "'not specified'"
+     else:
+          profession = "'" + profession + "'"
+
+     if country == "":
+          country = "'not specified'"
+     else:
+          country = "'" + country + "'"
+     
+     return firstname, lastname, profession, country
+
+
 def submitInfoDonor(firstnameEntry, lastnameEntry, professionEntry, countryEntry, sideText1):
-     firstname = firstnameEntry.get()
-     lastname = lastnameEntry.get()
-     profession = professionEntry.get()
-     country = countryEntry.get()
+     
+     firstname, lastname, profession, country = parseInfomationDonor(firstnameEntry.get(), lastnameEntry.get(), professionEntry.get(), countryEntry.get())
 
      try:
-          mycursor.execute("INSERT INTO donors (firstname, lastname, profession, country) VALUES ('" + firstname + "', '" +
-                                                                                                    lastname + "', '" +
-                                                                                                    profession + "', '" +
-                                                                                                    country + "')")
+
+          #mycursor.execute("INSERT INTO donors (firstname, lastname, profession, country) VALUES (%s, %s, %s, %s)", info)
+
+          mycursor.execute("INSERT INTO donors (firstname, lastname, profession, country) VALUES (" + firstname + ", " +
+                                                                                                    lastname + ", " +
+                                                                                                    profession + ", " +
+                                                                                                    country + ")")
           firstnameEntry.delete(0,'end')
           lastnameEntry.delete(0,'end')
           professionEntry.delete(0, 'end')

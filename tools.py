@@ -77,37 +77,33 @@ def setTriggerTotalDonated():
 # * for the second tab, about adding data to the database
 def parseInfomationDonor(firstname, lastname, profession, country):
 
-     if firstname == "":
+     if not firstname:
           firstname = "NULL"
      else:
           firstname = "'" + firstname + "'"
 
-     if lastname == "":
+     if not lastname:
           lastname = "NULL"
      else:
           lastname = "'" + lastname + "'"
 
-     if profession == "":
+     if not profession:
           profession = "'not specified'"
      else:
           profession = "'" + profession + "'"
 
-     if country == "":
+     if not country:
           country = "'not specified'"
      else:
           country = "'" + country + "'"
      
      return firstname, lastname, profession, country
 
-
 def submitInfoDonor(firstnameEntry, lastnameEntry, professionEntry, countryEntry, sideText1):
      
      firstname, lastname, profession, country = parseInfomationDonor(firstnameEntry.get(), lastnameEntry.get(), professionEntry.get(), countryEntry.get())
 
      try:
-
-          #mycursor.execute("INSERT INTO donors (firstname, lastname, profession, country) VALUES (%s, %s, %s, %s)", info)
-
           mycursor.execute("INSERT INTO donors (firstname, lastname, profession, country) VALUES (" + firstname + ", " +
                                                                                                     lastname + ", " +
                                                                                                     profession + ", " +
@@ -119,10 +115,7 @@ def submitInfoDonor(firstnameEntry, lastnameEntry, professionEntry, countryEntry
 
           sideText1.set("data successfully added to the table")
 
-     except Exception as e:
-          # ! for debugging purposes
-          print(e)
-          
+     except:
           sideText1.set("error occured")
 
 def switchAnonymousDonor(anonymousVar, donorFirstNameEntry, donorLastNameEntry):
@@ -133,26 +126,35 @@ def switchAnonymousDonor(anonymousVar, donorFirstNameEntry, donorLastNameEntry):
           donorFirstNameEntry.config(state="normal")
           donorLastNameEntry.config(state="normal")
 
-def submitInfoDonation(anonymousVar, amountEntry, typeDonationEntry, donorFirstNameEntry, donorLastNameEntry, sideText2):
-     if anonymousVar.get() == 0:
-          amount = amountEntry.get()
-          typeDonation = typeDonationEntry.get()
-          donorFirstName = donorFirstNameEntry.get()
-          donorLastName = donorLastNameEntry.get()
+def parseInformationDonation(anonymous, amount, typeDonation, donorFirstName, donorLastName):
+
+     if not amount:
+          amount = "NULL"
      
+     if not typeDonation:
+          typeDonation = "'not specified'"
      else:
-          amount = amountEntry.get()
-          typeDonation = typeDonationEntry.get()
-          donorFirstName = "anonymous"
-          donorLastName = "anonymous"
+          typeDonation = "'" + typeDonation + "'"
+     
+     if anonymous == 1:
+          donorFirstName = "'anonymous'"
+          donorLastName = "'anonymous'"
+     else:
+          donorFirstName = "'" + donorFirstName + "'"
+          donorLastName = "'" + donorLastName + "'"
+
+     return amount, typeDonation, donorFirstName, donorLastName
+
+def submitInfoDonation(anonymousVar, amountEntry, typeDonationEntry, donorFirstNameEntry, donorLastNameEntry, sideText2):
+     
+     amount, typeDonation, donorFirstName, donorLastName = parseInformationDonation(anonymousVar.get(), amountEntry.get(), typeDonationEntry.get(), donorFirstNameEntry.get(), donorLastNameEntry.get())
 
      try: 
-          
-          mycursor.execute("(SELECT id FROM donors WHERE firstname = '" + donorFirstName + "' and lastname = '" + donorLastName + "' )")
+          mycursor.execute("(SELECT id FROM donors WHERE firstname = " + donorFirstName + " and lastname = " + donorLastName + ")")
           donor_id = mycursor.fetchone()[0]
           
-          mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES ('" + amount + "', '" +
-                                                                                     typeDonation + "', " +
+          mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES (" + amount + ", " +
+                                                                                     typeDonation + ", " +
                                                                                      str(donor_id) + " )")
 
           amountEntry.delete(0,'end')
@@ -163,9 +165,7 @@ def submitInfoDonation(anonymousVar, amountEntry, typeDonationEntry, donorFirstN
           
           sideText2.set("data successfully added to the table")
 
-     except Exception as e:
-          # ! for debugging purposes
-          print(e)
+     except:
           sideText2.set("error occured")
 
 

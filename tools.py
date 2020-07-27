@@ -170,15 +170,8 @@ def submitInfoDonation(anonymousVar, amountEntry, typeDonationEntry, donorFirstN
 
 
 # this method cleans the output of the databse to a readable table
-def prettyRows(titles, rows):
+def prettyRows(rows):
      output = ""
-
-     for i in range(len(titles)):
-          
-
-     """for title in titles:
-          output += title + "\t"
-
      for row in rows:
           for element in row:
                if type(element) is str:
@@ -188,38 +181,38 @@ def prettyRows(titles, rows):
                     
                output += str(element) + space
           output += "\n"
-     return output"""
+     return output
 
 def getAllInfoDonors(outputInfo):
 
-    mycursor.execute("SELECT firstname, lastname, profession, country, number_donations, total_gifted, created_at FROM donors;")
+    mycursor.execute("SELECT * FROM donors;")
     rows = mycursor.fetchall()
 
-    rows = prettyRows(["first name", "last name", "profession" , "country", "number of donations", "total gifted", "created at"], rows)
+    rows = prettyRows(rows)
 
     outputInfo.delete("1.0", "end")
     outputInfo.insert(tk.END, rows)
 
 def getAllDonations(outputInfo):
-     mycursor.execute("SELECT amount, type, firstname, lastname, donations.created_at FROM donations, donors WHERE donations.donor_id = donors.id;")
+     mycursor.execute("SELECT * FROM donations, donors WHERE donations.donor_id = donors.id;")
      rows = mycursor.fetchall()
-     rows = prettyRows(["amount", "type", "first name", "last name", "donated at"], rows)
+     rows = prettyRows(rows)
 
      outputInfo.delete("1.0", "end")
      outputInfo.insert(tk.END, rows)
 
 def getAllAnonymousDonations(outputInfo):
-     mycursor.execute("SELECT amount, type, donations.created_at FROM donations WHERE donor_id = (SELECT id FROM donors WHERE firstname = 'anonymous' and lastname = 'anonymous');")
+     mycursor.execute("SELECT * FROM donations WHERE donor_id = (SELECT id FROM donors WHERE firstname = 'anonymous' and lastname = 'anonymous');")
      rows = mycursor.fetchall()
-     rows = prettyRows(["amount", "type", "donated at"], rows)
+     rows = prettyRows(rows)
 
      outputInfo.delete("1.0", "end")
      outputInfo.insert(tk.END, rows)
 
 def getLast10Donations(outputInfo):
-     mycursor.execute("SELECT amount, type, firstname, lastname, donations.created_at FROM donations, donors WHERE donations.donor_id = donors.id ORDER BY donations.created_at DESC LIMIT 10;")
+     mycursor.execute("SELECT * FROM donations, donors WHERE donations.donor_id = donors.id ORDER BY donations.created_at DESC LIMIT 10;")
      rows = mycursor.fetchall()
-     rows = prettyRows(["amount", "type", "first name", "last name", "donated at"], rows)
+     rows = prettyRows(rows)
 
      outputInfo.delete("1.0", "end")
      outputInfo.insert(tk.END, rows)
@@ -228,9 +221,9 @@ def searchCustomDonor(firstNameEntry, lastNameEntry, outputInfo):
      firstName = firstNameEntry.get()
      lastName = lastNameEntry.get()
 
-     mycursor.execute("SELECT firstname, lastname, profession, country, number_donations, total_gifted, donors.created_at, amount, type, donations.created_at FROM donors, donations WHERE donations.donor_id = donors.id and firstname = '" + firstName + "' and lastname = '" + lastName + "';")
+     mycursor.execute("SELECT * FROM donors, donations WHERE donations.donor_id = donors.id and firstname = '" + firstName + "' and lastname = '" + lastName + "';")
      rows = mycursor.fetchall()
-     rows = prettyRows(["first name", "last name", "profession" , "country", "number of donations", "total gifted", "donor created at", "amount", "type", "donated at"], rows)
+     rows = prettyRows(rows)
 
      outputInfo.delete("1.0", "end")
      outputInfo.insert(tk.END, rows)

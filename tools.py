@@ -1,16 +1,25 @@
-from conDB import mydb, mycursor
-import tkinter as tk
+"""
+This is a helper module for the main.py file. It has all the helper methods needed.
+"""
 
-def createDatabase():
-    # creates the database if not existant
-    mycursor.execute("CREATE DATABASE IF NOT EXISTS donations_db;")
+if __name__ != "__main__":
+     from conDB import mydb, mycursor
+     import tkinter as tk
 
-    # ! whenever you run the program you delete the previous table so that you can play around with the features
-    mycursor.execute("DROP TABLE donations;")
-    mycursor.execute("DROP TABLE donors;")
 
-    # create tables for database
-    mycursor.execute("CREATE TABLE IF NOT EXISTS Donors (id INT AUTO_INCREMENT PRIMARY KEY," +
+def setUpDatabase():
+     """
+     This method sets up the database if it does not aleady exists. It creates the database itself,
+     it creates the tables, the anonymous entry so that we can add anonymous donations and lastly
+     the two triggers related to the donors.
+     """
+
+     # creates the database if not existant
+     mycursor.execute("CREATE DATABASE IF NOT EXISTS donations_db;")
+     mycursor.execute("use donations_db;")
+
+     # create tables for database
+     mycursor.execute("CREATE TABLE IF NOT EXISTS Donors (id INT AUTO_INCREMENT PRIMARY KEY," +
                                                         "firstname VARCHAR(255) NOT NULL," + 
                                                         "lastname VARCHAR(255) NOT NULL," +
                                                         "profession VARCHAR(255) DEFAULT 'not specified'," +
@@ -20,22 +29,18 @@ def createDatabase():
                                                         "created_at TIMESTAMP DEFAULT NOW()," +
                                                         "UNIQUE (firstname, lastname))")
 
-    mycursor.execute("CREATE TABLE IF NOT EXISTS Donations (id INT AUTO_INCREMENT PRIMARY KEY," + 
+     mycursor.execute("CREATE TABLE IF NOT EXISTS Donations (id INT AUTO_INCREMENT PRIMARY KEY," + 
                                                         "amount DECIMAL(65, 2) NOT NULL," + 
                                                         "type VARCHAR(255) DEFAULT 'not specified'," +
                                                         "donor_id INT NOT NULL,"
                                                         "created_at TIMESTAMP DEFAULT NOW()," + 
                                                         "FOREIGN KEY(donor_id) REFERENCES donors(id))")
+     
+     # this is the anonymous donor for the anonymous donations
+     mycursor.execute("INSERT IGNORE INTO donors (firstname, lastname) VALUES ('anonymous', 'anonymous')")
 
-def addFakeDataDonors():
-    mycursor.execute("INSERT IGNORE INTO donors (firstname, lastname, profession, country) VALUES ('John', 'Smith', 'baker', 'Belgium')," +
-                                                                                                      "('Elena', 'Jok', 'artist', 'France')," +
-                                                                                                      "('Jean', 'Youlk', 'painter', 'Poland');")
-
-def addFakeDataDonations():
-    mycursor.execute("INSERT INTO donations (amount, type, donor_id) VALUES (50, 'cash', 1), (45, 'card', 2);")
-
-def setTriggerNumberDonations():
+     # the trigger about the number of donations for each user
+     mycursor.execute("DROP TRIGGER IF EXISTS number_donation_add")
      mycursor.execute("CREATE TRIGGER number_donation_add AFTER INSERT ON donations " +
                       "FOR EACH ROW " +
                       "BEGIN " +
@@ -45,6 +50,7 @@ def setTriggerNumberDonations():
                          "WHERE donors.id = NEW.donor_id; " +
                       "END;")
 
+     mycursor.execute("DROP TRIGGER IF EXISTS number_donation_del")
      mycursor.execute("CREATE TRIGGER number_donation_del AFTER DELETE ON donations " +
                       "FOR EACH ROW " +
                       "BEGIN " +
@@ -54,7 +60,8 @@ def setTriggerNumberDonations():
                          "WHERE donors.id = OLD.donor_id; " +
                       "END;")
 
-def setTriggerTotalDonated():
+     # trigger for counting the toal each donor has donated
+     mycursor.execute("DROP TRIGGER IF EXISTS total_donated_add")
      mycursor.execute("CREATE TRIGGER total_donated_add AFTER INSERT ON donations " +
                       "FOR EACH ROW " +
                       "BEGIN " +
@@ -64,6 +71,7 @@ def setTriggerTotalDonated():
                          "WHERE donors.id = NEW.donor_id; " +
                       "END;")
 
+     mycursor.execute("DROP TRIGGER IF EXISTS total_donated_del")
      mycursor.execute("CREATE TRIGGER total_donated_del AFTER DELETE ON donations " +
                       "FOR EACH ROW " +
                       "BEGIN " +
@@ -169,7 +177,7 @@ def submitInfoDonation(anonymousVar, amountEntry, typeDonationEntry, donorFirstN
           sideText2.set("error occured")
 
 
-# this method cleans the output of the databse to a readable table
+# * for the third tab
 def prettyRows(rows):
      output = ""
      for row in rows:
@@ -218,6 +226,7 @@ def getLast10Donations(outputInfo):
      outputInfo.insert(tk.END, rows)
 
 def searchCustomDonor(firstNameEntry, lastNameEntry, outputInfo):
+
      firstName = firstNameEntry.get()
      lastName = lastNameEntry.get()
 
@@ -227,3 +236,72 @@ def searchCustomDonor(firstNameEntry, lastNameEntry, outputInfo):
 
      outputInfo.delete("1.0", "end")
      outputInfo.insert(tk.END, rows)
+
+
+
+# * for the fourth tab
+def removeDonor(firstnameEntry, lastnameEntry, sideText1Remove):
+
+     firstname = firstnameEntry.get()
+     lastname = lastnameEntry.get()
+
+     if firstname == "anonymous" and lastname == "anonymous":
+          sideText1Remove.set("Cannot remove this donor")
+          return
+
+     try:
+          mycursor.execute("SELECT id FROM donors WHERE firstname = '" + firstname + "' and lastname = '" + lastname + "';")
+          donor_id = mycursor.fetchone()
+          
+          if donor_id is None:
+               sideText1Remove.set("could not find donor in database")
+               return
+
+          mycursor.execute("UPDATE donations SET donor_id = 1 WHERE donor_id = " + str(donor_id[0]) + ";")
+
+          mycursor.execute("DELETE FROM donors WHERE firstname = '" + firstname + "' and lastname = '" + lastname + "';")
+
+          firstnameEntry.delete(0,'end')
+          lastnameEntry.delete(0, 'end')
+
+          sideText1Remove.set("donor successfully removed from database")
+
+     except:
+          sideText1Remove.set("error occured")
+
+def switchAnonymousDonorRemove(anonymousVar, donorFirstNameEntry, donorLastNameEntry):
+     if anonymousVar.get() == 1:
+          donorFirstNameEntry.config(state="disabled")
+          donorLastNameEntry.config(state="disabled")
+     else:
+          donorFirstNameEntry.config(state="normal")
+          donorLastNameEntry.config(state="normal")
+
+def removeDonation(anonymousVarRermove, amountEntryRemove, typeDonationEntryRemove, donorFirstNameEntryRemove, donorLastNameEntryRemove, sideText2Remove):
+     
+     if anonymousVarRermove.get() == 0:
+          donorFirstName = donorFirstNameEntryRemove.get()
+          donorLastName = donorLastNameEntryRemove.get()
+     else:
+          donorFirstName = "anonymous"
+          donorLastName = "anonymous"
+          
+     amount = amountEntryRemove.get()
+     typeDonation = typeDonationEntryRemove.get()
+
+     try: 
+          mycursor.execute("SELECT id FROM donors WHERE firstname = '" + donorFirstName + "' and lastname = '" + donorLastName + "';")
+          donor_id = mycursor.fetchone()[0]
+
+          mycursor.execute("DELETE FROM donations WHERE amount = " + amount + " and type = '" + typeDonation + "' and donor_id = " + str(donor_id) + " LIMIT 1;")
+
+          amountEntryRemove.delete(0,'end')
+          typeDonationEntryRemove.delete(0,'end')
+          donorFirstNameEntryRemove.delete(0, 'end')
+          donorLastNameEntryRemove.delete(0, 'end')
+
+          
+          sideText2Remove.set("donation successfully removed from database")
+
+     except:
+          sideText2Remove.set("could not find donation or donor")

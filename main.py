@@ -12,19 +12,7 @@ conDB.initialiseConnection()
 from tools import *
 
 # this creates the database and the tables
-createDatabase()
-
-# this adds the anonymous donor so that we can add anonnymous donations
-mycursor.execute("INSERT INTO donors (firstname, lastname) VALUES ('anonymous', 'anonymous')")
-
-setTriggerNumberDonations()
-
-setTriggerTotalDonated()
-
-# ! this methods are for testing purpouses
-addFakeDataDonors()
-addFakeDataDonations()
-
+setUpDatabase()
 
 
 # * creation of the different tabs of the window
@@ -39,17 +27,37 @@ rootTab.add(tab2, text="add data")
 tab3 = ttk.Frame(rootTab)
 rootTab.add(tab3, text="retrieve data")
 
+tab4 = ttk.Frame(rootTab)
+rootTab.add(tab4, text="remove data")
+
 rootTab.pack(fill="both")
 
 # * set up of the first tab
 titleLabel = tk.Label(tab1, text="Information about the program", font="bold")
 titleLabel.pack()
 
-textLabel = tk.Label(tab1,
-                    text="This progam will helps with adding and retreiving data from a database. \n\n" + 
-                         "The tab 'add data' helps you add rows to the databse.\nYou can enter any data you want and it will add it to the database. \n\n" +  
-                         "The tab 'retrieve data' will help you find data inside the database from different options that\nyou choose. \n\n" + 
-                         "this program works by connecting to a MySQL server. Please install and start a server on \nyour machine.",
+frameTextIntro = tk.Frame(tab1)
+frameTextIntro.pack(fill="x")
+textLabel = tk.Label(frameTextIntro,
+                    text="This program was created in order to ease the interaction with the database.\n"+
+                         "You can use it in order to add data to the database, retrive data from the database and also to remove\n" +
+                         "data is you made a mistake somewhere. Here is an explanation of each tab:\n\n" + 
+                         
+                         "The tab 'add data' helps you add rows to the database.\n" +
+                         "You can enter new donors (as long as they don't exist already) and also new donations.\n" +
+                         "Donations can be saved from a donor but can also be anonymous.\n\n" +
+                         
+                         
+                         "The tab 'retrieve data' will help you find data inside the database.\n" +
+                         "You have different options to choose from: getting all the donors, getting all the donations,\n" +
+                         "getting all the anonymous donations, getting the last 10 donations and lastly finding everything \n" +
+                         "connected with a certain donor based on its first name and last name.\n\n" +
+
+                         "The last tab called 'remove data' is to remove rows form the database.\n" +
+                         "Again, you can remove donors and donations. If you remove a donor that has made donations, then \n" +
+                         "Its donations will become anonymous.\n\n" +
+
+                         "This program works by connecting to a MySQL server. Please install and start a server on your machine.",
                     justify="left")
 textLabel.pack(side="left")
 
@@ -168,7 +176,7 @@ sideText2Label.pack()
 
 
 # * set up of the third tab
-titleLabel = tk.Label(tab3, text="retreive data from database", font="bold")
+titleLabel = tk.Label(tab3, text="Retreive data from database", font="bold")
 titleLabel.pack()
 
 frameButtons1 = tk.Frame(tab3)
@@ -212,6 +220,105 @@ lastNameEntry.pack(side="left")
 
 searchButton = tk.Button(frameButtons2, text="search", command=lambda:searchCustomDonor(firstNameEntry, lastNameEntry, outputInfo))
 searchButton.pack(side="left")
+
+# * set up of the fourth tab
+
+titleLabel = tk.Label(tab4, text="Remove data from the database", font="bold")
+titleLabel.pack()
+
+# ----- for removing a donor -----
+
+frameSubtitle1 = tk.Frame(tab4)
+frameSubtitle1.pack(fill="x")
+subtitle1 = tk.Label(frameSubtitle1, text="Remove a donor here:")
+subtitle1.pack(side="left")
+
+# first name
+frameFirstname = tk.Frame(tab4)
+frameFirstname.pack(fill="x")
+firstnameLabel = tk.Label(frameFirstname, text="first name:", width=20)
+firstnameLabel.pack(side="left")
+firstnameEntryRemove = tk.Entry(frameFirstname)
+firstnameEntryRemove.pack(fill="x")
+
+# last name
+frameLastname = tk.Frame(tab4)
+frameLastname.pack(fill="x")
+lastnameLabel = tk.Label(frameLastname, text="last name:", width=20)
+lastnameLabel.pack(side="left")
+lastnameEntryRemove = tk.Entry(frameLastname)
+lastnameEntryRemove.pack(fill="x")
+
+# this is the text that gives info about the process of the submission to the database
+sideText1Remove = tk.StringVar()
+sideText1Remove.set("")
+sideText1RemoveLabel = tk.Label(tab4, textvariable=sideText1Remove)
+
+# button that submits info from the entry text boxes to the database
+buttonSubmitDonor = tk.Button(tab4, text="remove from database", command=lambda:removeDonor(firstnameEntryRemove, lastnameEntryRemove, sideText1Remove))
+buttonSubmitDonor.pack(fill="x")
+sideText1RemoveLabel.pack()
+
+
+# ----- for removing a donation -----
+
+frameSubtitle2 = tk.Frame(tab4)
+frameSubtitle2.pack(fill="x")
+subtitle2Label = tk.Label(frameSubtitle2, text="Remove a donation here:")
+subtitle2Label.pack(side="left")
+
+# amount of money for donation
+frameAmount = tk.Frame(tab4)
+frameAmount.pack(fill="x")
+amountLabel = tk.Label(frameAmount, text="amount:", width=20)
+amountLabel.pack(side="left")
+amountEntryRemove = tk.Entry(frameAmount)
+amountEntryRemove.pack(fill="x")
+
+# type of donation
+frameTypeDonation = tk.Frame(tab4)
+frameTypeDonation.pack(fill="x")
+typeDonationLabel = tk.Label(frameTypeDonation, text="type of donation:", width=20)
+typeDonationLabel.pack(side="left")
+typeDonationEntryRemove = tk.Entry(frameTypeDonation)
+typeDonationEntryRemove.pack(fill="x")
+
+# donor first name
+frameDonorFirstName = tk.Frame(tab4)
+donorFirstNameLabel = tk.Label(frameDonorFirstName, text="donor first name:", width=20)
+donorFirstNameLabel.pack(side="left")
+donorfirstnameEntryRemove = tk.Entry(frameDonorFirstName)
+donorfirstnameEntryRemove.pack(fill="x")
+
+# donor last name
+frameDonorLastName = tk.Frame(tab4)
+donorLastNameLabel = tk.Label(frameDonorLastName, text="donor last name:", width=20)
+donorLastNameLabel.pack(side="left")
+donorLastNameEntryRemove = tk.Entry(frameDonorLastName)
+donorLastNameEntryRemove.pack(fill="x")
+
+# for the type of donor, if he is anonymous
+frameAnonymous = tk.Frame(tab4)
+frameAnonymous.pack(fill="x")
+anonymousVarRermove = tk.IntVar()
+anonymousCheckBoxRemove = tk.Checkbutton(frameAnonymous, text="Anonymous donation ", variable=anonymousVarRermove, onvalue=1, offvalue=0, command=lambda:switchAnonymousDonorRemove(anonymousVarRermove, donorfirstnameEntryRemove, donorLastNameEntryRemove))
+anonymousCheckBoxRemove.pack(side="left")
+
+# so that things are in the right order
+frameDonorFirstName.pack(fill="x")
+frameDonorLastName.pack(fill="x")
+
+# this is the text that gives info about the process of the transaction
+sideText2Remove = tk.StringVar()
+sideText2Remove.set("")
+sideText2RemoveLabel = tk.Label(tab4, textvariable=sideText2Remove)
+
+# button that submits info from the entry text boxes to the database
+buttonSubmitDonation = tk.Button(tab4, text="remove from database", command=lambda:removeDonation(anonymousVarRermove, amountEntryRemove, typeDonationEntryRemove, donorfirstnameEntryRemove, donorLastNameEntryRemove, sideText2Remove))
+buttonSubmitDonation.pack(fill="x")
+
+sideText2RemoveLabel.pack()
+
 
 
 # * opens the root
